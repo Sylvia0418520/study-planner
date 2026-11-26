@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f1e7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="作业清单">
+<link rel="manifest" href="manifest.json">
+<title>作业清单</title>
+<style>
+:root{--bg:#f7f1e7;--paper:#fffdf8;--ink:#39352f;--muted:#8e877d;--line:#e9e0d3;--accent:#8b765d;--peach:#f2dfcf;--green:#dce8d8;--red:#f3d9d1;--shadow:0 8px 28px #59472b0d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 16px calc(86px + env(safe-area-inset-bottom));}
+header{max-width:680px;margin:0 auto;padding:26px 2px 14px} .eyebrow{font-size:12px;color:var(--muted);letter-spacing:.08em}.headrow{display:flex;align-items:center;justify-content:space-between;margin-top:6px}h1{font-size:27px;margin:0;font-weight:750;letter-spacing:-.04em}.date{font-size:13px;color:var(--muted);margin-top:7px}
+main{max-width:680px;margin:auto}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 20px}.stat{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}.num{font-size:28px;font-weight:750}.stat small{display:block;color:var(--muted);margin-top:2px}
+.toolbar{display:flex;gap:8px;overflow:auto;padding:2px 0 12px}.chip{border:1px solid var(--line);background:#fffaf2;color:var(--muted);padding:9px 14px;border-radius:99px;white-space:nowrap;font-size:13px}.chip.active{background:var(--ink);color:white;border-color:var(--ink)}
+.section-title{font-size:15px;font-weight:700;margin:10px 2px 10px}.task{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px;margin:9px 0;box-shadow:var(--shadow)}.tasktop{display:flex;align-items:flex-start;gap:10px}.check{width:22px;height:22px;border:1.5px solid #b9ad9d;border-radius:50%;flex:none;margin-top:1px;background:transparent}.check.done{background:var(--accent);border-color:var(--accent);color:white}.taskbody{flex:1;min-width:0}.course{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.04em}.taskname{font-size:16px;font-weight:650;margin:4px 0 7px;overflow-wrap:anywhere}.meta{font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}.tag{font-size:11px;padding:5px 8px;border-radius:99px;background:var(--peach);color:#795c43}.tag.overdue{background:var(--red);color:#955747}.tag.doneTag{background:var(--green);color:#597052}.actions{display:flex;gap:7px;margin-top:12px;justify-content:flex-end}.mini{border:0;background:#f4eee4;color:#716657;border-radius:9px;padding:7px 10px;font-size:12px}.empty{text-align:center;padding:40px 15px;color:var(--muted);background:#fffaf3;border:1px dashed var(--line);border-radius:18px}.empty b{display:block;color:var(--ink);margin-bottom:6px}
+nav{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:#f7f1e7ed;backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:3}.add{border:0;background:var(--ink);color:white;border-radius:99px;padding:14px 25px;font-size:15px;font-weight:650;box-shadow:0 6px 18px #39352f25}
+dialog{border:0;border-radius:22px;padding:0;width:min(92vw,480px);background:var(--paper);color:var(--ink);box-shadow:0 20px 70px #0003}dialog::backdrop{background:#28231d66;backdrop-filter:blur(3px)}.modal{padding:21px}.modal h2{margin:0 0 16px;font-size:20px}.field{margin:12px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fffaf3;color:var(--ink);font:inherit;font-size:14px}.field textarea{min-height:72px;resize:vertical}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.modalfoot{display:flex;gap:8px;margin-top:18px}.modalfoot button{flex:1;padding:12px;border-radius:12px;border:0;font-weight:650}.save{background:var(--ink);color:white}.cancel{background:#f0e9de;color:var(--ink)}.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px}.topbuttons{display:flex;gap:7px}.iconbtn{border:1px solid var(--line);background:#fffaf3;color:var(--accent);border-radius:12px;padding:9px 11px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+ <div class="eyebrow">A LITTLE SPACE FOR YOUR STUDIES</div>
+ <div class="headrow"><h1>我的作业清单</h1><div class="topbuttons"><button class="iconbtn" id="notifyBtn">提醒设置</button><button class="iconbtn" id="backupBtn">导出备份</button><button class="iconbtn" id="importBtn">导入</button></div></div>
+ <div class="date" id="today"></div>
+</header>
+<main>
+ <section class="stats"><div class="stat"><div class="num" id="pendingCount">0</div><small>待完成</small></div><div class="stat"><div class="num" id="soonCount">0</div><small>三天内截止</small></div></section>
+ <div class="toolbar" id="filters"><button class="chip active" data-filter="all">全部</button><button class="chip" data-filter="pending">未完成</button><button class="chip" data-filter="soon">即将截止</button><button class="chip" data-filter="done">已完成</button></div>
+ <div class="section-title" id="listTitle">所有作业</div>
+ <section id="tasks"></section>
+</main>
+<nav><button class="add" id="addBtn">＋ 添加作业</button></nav>
+<dialog id="taskDialog"><form class="modal" id="taskForm">
+ <h2 id="dialogTitle">添加一项作业</h2><input type="hidden" id="taskId">
+ <div class="field"><label for="course">课程名称</label><input id="course" required placeholder="例如：微观经济学"></div>
+ <div class="field"><label for="name">作业内容</label><textarea id="name" required placeholder="例如：完成第三章课后习题"></textarea></div>
+ <div class="two"><div class="field"><label for="dueDate">截止日期</label><input id="dueDate" type="date" required></div><div class="field"><label for="dueTime">截止时间</label><input id="dueTime" type="time" value="23:59" required></div></div>
+ <div class="field"><label for="reminder">提前提醒</label><select id="reminder"><option value="1440">提前一天</option><option value="180">提前三小时</option><option value="60">提前一小时</option><option value="0">截止时提醒</option><option value="-1">不提醒</option></select></div>
+ <div class="modalfoot"><button type="button" class="cancel" id="cancelBtn">取消</button><button class="save" type="submit">保存作业</button></div>
+ <div class="note">作业数据只保存在这台设备的浏览器本地。提醒目前需要应用处于打开状态；iPhone 网页应用不能仅靠本地网页代码保证关闭后准时推送。</div>
+</form></dialog>
+<dialog id="settingsDialog"><div class="modal"><h2>提醒设置</h2><p style="font-size:13px;line-height:1.6;color:var(--muted)">允许通知后，应用打开期间会在设定的提醒时间发出通知。请将本应用保持在前台或定期打开查看。</p><div class="modalfoot"><button class="cancel" id="settingsClose">关闭</button><button class="save" id="enableNotify">允许通知</button></div></div></dialog>
+<input id="importFile" type="file" accept="application/json" hidden>
+<script>
+const KEY='cream-study-planner-v1';let tasks=load(),filter='all';
+const $=id=>document.getElementById(id);
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(tasks))}
+function dateObj(t){return new Date(t.date+'T'+t.time+':00')}
+function fmt(d){return new Intl.DateTimeFormat('zh-CN',{month:'numeric',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).format(d)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ const now=new Date(),pending=tasks.filter(t=>!t.done),soon=pending.filter(t=>dateObj(t)-now<=3*864e5&&dateObj(t)>=now);
+ $('pendingCount').textContent=pending.length;$('soonCount').textContent=soon.length;
+ $('today').textContent=new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(now);
+ $('listTitle').textContent=({all:'所有作业',pending:'未完成作业',soon:'即将截止',done:'已完成'})[filter];
+ let list=tasks.filter(t=>filter==='all'||(filter==='pending'&&!t.done)||(filter==='done'&&t.done)||(filter==='soon'&&!t.done&&dateObj(t)-now<=3*864e5&&dateObj(t)>=now)).sort((a,b)=>dateObj(a)-dateObj(b));
+ $('tasks').innerHTML=list.length?list.map(t=>{let d=dateObj(t),over=!t.done&&d<now;return `<article class="task"><div class="tasktop"><button class="check ${t.done?'done':''}" aria-label="切换完成状态" data-check="${t.id}">${t.done?'✓':''}</button><div class="taskbody"><div class="course">${esc(t.course)}</div><div class="taskname">${esc(t.name)}</div><div class="meta"><span>◷ ${fmt(d)}</span><span class="tag ${t.done?'doneTag':over?'overdue':''}">${t.done?'已完成':over?'已逾期':d-now<864e5?'今天截止':'待完成'}</span></div></div></div><div class="actions"><button class="mini" data-edit="${t.id}">编辑</button><button class="mini" data-delete="${t.id}">删除</button></div></article>`}).join(''):'<div class="empty"><b>这里暂时很清静</b>点击下方「添加作业」，把任务放进来吧。</div>';
+ document.querySelectorAll('[data-check]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.check);t.done=!t.done;persist();render()});
+ document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editTask(b.dataset.edit));
+ document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{if(confirm('确定删除这项作业吗？')){tasks=tasks.filter(x=>x.id!==b.dataset.delete);persist();render()}});
+}
+function localDate(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function openNew(){ $('taskForm').reset();$('taskId').value='';$('dueDate').value=localDate();$('dueTime').value='23:59';$('dialogTitle').textContent='添加一项作业';$('taskDialog').showModal()}
+function editTask(id){let t=tasks.find(x=>x.id===id);$('taskId').value=t.id;$('course').value=t.course;$('name').value=t.name;$('dueDate').value=t.date;$('dueTime').value=t.time;$('reminder').value=t.reminder;$('dialogTitle').textContent='编辑作业';$('taskDialog').showModal()}
+$('addBtn').onclick=openNew;$('cancelBtn').onclick=()=>$('taskDialog').close();
+$('taskForm').onsubmit=e=>{e.preventDefault();let id=$('taskId').value;let old=tasks.find(t=>t.id===id);let item={id:id||(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()),course:$('course').value.trim(),name:$('name').value.trim(),date:$('dueDate').value,time:$('dueTime').value,reminder:Number($('reminder').value),done:old?.done||false,notified:old?.notified||[]};if(old)Object.assign(old,item);else tasks.push(item);persist();$('taskDialog').close();render()};
+$('filters').onclick=e=>{let b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x===b));render()};
+$('notifyBtn').onclick=()=>$('settingsDialog').showModal();$('settingsClose').onclick=()=>$('settingsDialog').close();
+$('enableNotify').onclick=async()=>{if(!('Notification'in window)){alert('当前浏览器不支持网页通知。');return}let p=await Notification.requestPermission();alert(p==='granted'?'通知权限已开启。':'尚未获得通知权限。');$('settingsDialog').close()};
+function checkReminders(){if(!('Notification'in window)||Notification.permission!=='granted')return;let now=Date.now(),changed=false;for(let t of tasks){if(t.done||t.reminder<0)continue;let due=dateObj(t).getTime(),at=due-t.reminder*60000,key=String(at);if(now>=at&&now<due+60000&&!t.notified.includes(key)){new Notification('作业提醒：'+t.course,{body:t.name+' · 截止 '+fmt(new Date(due))});t.notified.push(key);changed=true}}if(changed)persist()}
+$('backupBtn').onclick=()=>{let blob=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='我的作业备份.json';a.click();URL.revokeObjectURL(a.href);};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data))throw 0;if(confirm('导入会替换当前作业列表，继续吗？')){tasks=data;persist();render()}}catch{alert('备份文件格式不正确。');}};
+render();checkReminders();setInterval(checkReminders,30000);
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>

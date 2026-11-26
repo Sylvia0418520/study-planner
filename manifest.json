@@ -1,0 +1,10 @@
+{
+  "name": "我的作业清单",
+  "short_name": "作业清单",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f1e7",
+  "theme_color": "#f7f1e7",
+  "lang": "zh-CN",
+  "icons": []
+}
